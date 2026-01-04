@@ -1961,7 +1961,7 @@ func estimateMemoryUsage(f *ggml.GGML, numCtx int, batchSize int, numParallel in
 	layers := f.Tensors().GroupLayers()
 
 	// Sum all block layers
-	for i := 0; i < f.KV().BlockCount(); i++ {
+	for i := uint64(0); i < f.KV().BlockCount(); i++ {
 		if blk, ok := layers[fmt.Sprintf("blk.%d", i)]; ok {
 			weights += blk.Size()
 		}
