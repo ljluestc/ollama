@@ -1,0 +1,6 @@
+package manifest
+
+import (
+	"testing"
+)
+

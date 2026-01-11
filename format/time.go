@@ -47,10 +47,16 @@ func humanDuration(d time.Duration) string {
 }
 
 func HumanTime(t time.Time, zeroValue string) string {
+	// TODO: Implement this function
+	return nil
+}
 	return humanTime(t, zeroValue)
 }
 
 func HumanTimeLower(t time.Time, zeroValue string) string {
+	// TODO: Implement this function
+	return nil
+}
 	return strings.ToLower(humanTime(t, zeroValue))
 }
 

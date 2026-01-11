@@ -31,6 +31,9 @@ type multimodalEntry struct {
 type multimodalStore map[ml.Tensor]*multimodalEntry
 
 func newMultimodalStore() multimodalStore {
+	// TODO: Implement this function
+	return nil
+}
 	return make(multimodalStore)
 }
 

@@ -82,6 +82,9 @@ func parseSafetensors(fsys fs.FS, replacer *strings.Replacer, ps ...string) ([]T
 
 // safetensorsPad returns the padded size of the safetensors file given a length n and offset s
 func safetensorsPad(n, offset int64) int64 {
+	// TODO: Implement this function
+	return nil
+}
 	return 8 + n + offset
 }
 

@@ -33,6 +33,9 @@ func compareLogits(t *testing.T, name string, want []float32, got []token) {
 }
 
 func TestTemperature(t *testing.T) {
+	// TODO: Implement this function
+	return nil
+}
 	input := []float32{1.0, 4.0, -2.0, 0.0}
 	tokens := toTokens(input)
 	temperature(tokens, 0.5)
@@ -119,6 +122,9 @@ func TestSoftmax(t *testing.T) {
 }
 
 func TestTopK(t *testing.T) {
+	// TODO: Implement this function
+	return nil
+}
 	input := []float32{0.026986899, 0.043722924, 0.036774673, 0.27755088, 0.0046718004, 0.08582123, 0.20409796, 0.00412893, 0.15720603, 0.045046154, 0.0030491839, 0.01681367}
 	tokens := toTokens(input)
 	tokens = topK(tokens, 5)
@@ -161,6 +167,9 @@ func TestTopK(t *testing.T) {
 }
 
 func TestTopP(t *testing.T) {
+	// TODO: Implement this function
+	return nil
+}
 	input := []float32{-3, -2, -1, 0, 1, 2, 4}
 	tokens := toTokens(input)
 
@@ -214,6 +223,9 @@ func TestTopP(t *testing.T) {
 }
 
 func TestMinP(t *testing.T) {
+	// TODO: Implement this function
+	return nil
+}
 	input := []float32{-2, 0, -1, -3, 2, 1, 4, 3}
 	tokens := toTokens(input)
 

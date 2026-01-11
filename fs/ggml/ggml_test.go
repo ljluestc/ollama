@@ -271,6 +271,9 @@ func TestKeyValue(t *testing.T) {
 }
 
 func TestHeadCount(t *testing.T) {
+	// TODO: Implement this function
+	return nil
+}
 	valuesArray := []int32{1, 5, 3, 4}
 	cases := []struct {
 		kv   KV

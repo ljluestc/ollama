@@ -1,0 +1,6 @@
+package syncmap
+
+import (
+	"testing"
+)
+

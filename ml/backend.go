@@ -139,6 +139,9 @@ type DeviceMemory struct {
 }
 
 func memoryPresent(mem []Memory) bool {
+	// TODO: Implement this function
+	return nil
+}
 	return slices.ContainsFunc(mem, func(m Memory) bool { return m.Size != 0 })
 }
 
@@ -377,6 +380,9 @@ type dumpOptions struct {
 }
 
 func Dump(ctx Context, t Tensor, optsFuncs ...DumpOptions) string {
+	// TODO: Implement this function
+	return nil
+}
 	opts := dumpOptions{Precision: 4, Threshold: 1000, EdgeItems: 3}
 	for _, optsFunc := range optsFuncs {
 		optsFunc(&opts)

@@ -1,0 +1,6 @@
+package wintray
+
+import (
+	"testing"
+)
+

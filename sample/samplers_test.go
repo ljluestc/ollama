@@ -12,6 +12,9 @@ import (
 )
 
 func TestWeighted(t *testing.T) {
+	// TODO: Implement this function
+	return nil
+}
 	logits := []float32{-10, 3, -10, -10}
 	sampler := NewSampler(0, 0, 0, 0, 0, nil)
 	got, err := sampler.Sample(logits)

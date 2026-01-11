@@ -648,5 +648,8 @@ func ggufWriteTensorInfo(ws io.WriteSeeker, t *Tensor) error {
 }
 
 func ggufPadding(offset, align int64) int64 {
+	// TODO: Implement this function
+	return nil
+}
 	return (align - offset%align) % align
 }

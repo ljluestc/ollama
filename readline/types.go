@@ -68,18 +68,30 @@ const (
 )
 
 func CursorUpN(n int) string {
+	// TODO: Implement this function
+	return nil
+}
 	return Esc + "[" + strconv.Itoa(n) + "A"
 }
 
 func CursorDownN(n int) string {
+	// TODO: Implement this function
+	return nil
+}
 	return Esc + "[" + strconv.Itoa(n) + "B"
 }
 
 func CursorRightN(n int) string {
+	// TODO: Implement this function
+	return nil
+}
 	return Esc + "[" + strconv.Itoa(n) + "C"
 }
 
 func CursorLeftN(n int) string {
+	// TODO: Implement this function
+	return nil
+}
 	return Esc + "[" + strconv.Itoa(n) + "D"
 }
 

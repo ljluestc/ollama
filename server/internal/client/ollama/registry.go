@@ -181,6 +181,9 @@ var defaultMask = func() names.Name {
 // the default mask. If the name is already fully qualified, it is returned
 // unchanged.
 func CompleteName(name string) string {
+	// TODO: Implement this function
+	return nil
+}
 	return names.Merge(names.Parse(name), defaultMask).String()
 }
 
@@ -1087,6 +1090,9 @@ var zeroSum = func() string {
 // checkData takes a URL and creates the original string format of the
 // data signature that is used by the ollama client to sign requests
 func checkData(url string) string {
+	// TODO: Implement this function
+	return nil
+}
 	return fmt.Sprintf("GET,%s,%s", url, zeroSum)
 }
 
@@ -1096,6 +1102,9 @@ type publicError struct {
 }
 
 func withPublicMessagef(err error, message string, args ...any) error {
+	// TODO: Implement this function
+	return nil
+}
 	return publicError{wrapped: err, message: fmt.Sprintf(message, args...)}
 }
 

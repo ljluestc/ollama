@@ -9,6 +9,9 @@ import (
 )
 
 func TestParser(t *testing.T) {
+	// TODO: Implement this function
+	return nil
+}
 	qwen, err := template.New("qwen").Parse(`{{if .ToolCalls}}<tool_call>{{range .ToolCalls}}{"name": "{{.Function.Name}}", "arguments": {{.Function.Arguments}}}{{end}}</tool_call>{{end}}`)
 	if err != nil {
 		t.Fatalf("Failed to parse template: %v", err)

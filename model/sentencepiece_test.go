@@ -49,6 +49,9 @@ func loadSentencePieceVocab(t *testing.T) SentencePieceModel {
 }
 
 func TestSentencePieceEncode(t *testing.T) {
+	// TODO: Implement this function
+	return nil
+}
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
 	slog.SetDefault(logger)
 

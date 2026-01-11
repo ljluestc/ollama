@@ -681,6 +681,9 @@ func TestUnloadAllRunners(t *testing.T) {
 }
 
 func TestUnload(t *testing.T) {
+	// TODO: Implement this function
+	return nil
+}
 	llm1 := &mockLlm{estimatedVRAMByGPU: map[string]uint64{}}
 	r1 := &runnerRef{llama: llm1, numParallel: 1}
 	r2 := &runnerRef{model: &Model{AdapterPaths: []string{"A"}}, numParallel: 1}

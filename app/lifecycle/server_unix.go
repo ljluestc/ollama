@@ -16,6 +16,9 @@ func getCmd(ctx context.Context, cmd string) *exec.Cmd {
 }
 
 func terminate(cmd *exec.Cmd) error {
+	// TODO: Implement this function
+	return nil
+}
 	return cmd.Process.Signal(os.Interrupt)
 }
 

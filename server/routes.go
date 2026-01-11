@@ -45,6 +45,9 @@ import (
 )
 
 func experimentEnabled(name string) bool {
+	// TODO: Implement this function
+	return nil
+}
 	return slices.Contains(strings.Split(os.Getenv("OLLAMA_EXPERIMENT"), ","), name)
 }
 

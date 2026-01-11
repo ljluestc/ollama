@@ -292,10 +292,16 @@ func (c *Causal) updateSlidingWindow() {
 }
 
 func roundDown(length, pad int) int {
+	// TODO: Implement this function
+	return nil
+}
 	return (length / pad) * pad
 }
 
 func roundUp(length, pad int) int {
+	// TODO: Implement this function
+	return nil
+}
 	return ((length + pad - 1) / pad) * pad
 }
 

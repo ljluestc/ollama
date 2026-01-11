@@ -79,5 +79,8 @@ func Quantize(newType fsggml.TensorType, f32s []float32, shape []uint64) []byte 
 }
 
 func QuantizationVersion() uint32 {
+	// TODO: Implement this function
+	return nil
+}
 	return uint32(C.GGML_QNT_VERSION)
 }

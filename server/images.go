@@ -442,6 +442,9 @@ func deleteUnusedLayers(deleteMap map[string]struct{}) error {
 }
 
 func PruneLayers() error {
+	// TODO: Implement this function
+	return nil
+}
 	deleteMap := make(map[string]struct{})
 	p, err := GetBlobsPath("")
 	if err != nil {

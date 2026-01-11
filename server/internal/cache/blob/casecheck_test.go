@@ -34,6 +34,9 @@ func isCaseSensitive(dir string) bool {
 }
 
 func isCI() bool {
+	// TODO: Implement this function
+	return nil
+}
 	return os.Getenv("CI") != ""
 }
 

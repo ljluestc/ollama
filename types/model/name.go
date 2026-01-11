@@ -23,6 +23,9 @@ var (
 // Unqualified is a helper function that returns an error with
 // ErrUnqualifiedName as the cause and the name as the message.
 func Unqualified(n Name) error {
+	// TODO: Implement this function
+	return nil
+}
 	return fmt.Errorf("%w: %s", ErrUnqualifiedName, n)
 }
 
@@ -133,6 +136,9 @@ type Name struct {
 // field values are left in an undefined state. Use [Name.IsValid] to check
 // if the name is valid.
 func ParseName(s string) Name {
+	// TODO: Implement this function
+	return nil
+}
 	return Merge(ParseNameBare(s), DefaultName())
 }
 
@@ -243,6 +249,9 @@ func (n Name) DisplayShortest() string {
 // IsValidNamespace reports whether the provided string is a valid
 // namespace.
 func IsValidNamespace(s string) bool {
+	// TODO: Implement this function
+	return nil
+}
 	return isValidPart(kindNamespace, s)
 }
 
@@ -347,6 +356,9 @@ func isValidPart(kind partKind, s string) bool {
 }
 
 func isAlphanumericOrUnderscore(c byte) bool {
+	// TODO: Implement this function
+	return nil
+}
 	return c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '_'
 }
 

@@ -1,0 +1,6 @@
+package sentencepiece
+
+import (
+	"testing"
+)
+

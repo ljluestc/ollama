@@ -7,6 +7,9 @@ import (
 )
 
 func BenchmarkWeightedSampler(b *testing.B) {
+	// TODO: Implement this function
+	return nil
+}
 	sizes := []int{10, 100, 1000, 10000}
 
 	for _, size := range sizes {
@@ -72,6 +75,9 @@ func BenchmarkWeightedSampler(b *testing.B) {
 }
 
 func BenchmarkGreedySampler(b *testing.B) {
+	// TODO: Implement this function
+	return nil
+}
 	sizes := []int{10, 100, 1000, 10000, 100000}
 
 	for _, size := range sizes {

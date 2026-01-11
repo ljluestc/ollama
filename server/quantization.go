@@ -55,6 +55,9 @@ type quantizeState struct {
 }
 
 func useMoreBits(iLayer, nLayers int) bool {
+	// TODO: Implement this function
+	return nil
+}
 	return iLayer < (nLayers/8) || iLayer >= 7*nLayers/8 || (iLayer-nLayers/8)%3 == 2
 }
 

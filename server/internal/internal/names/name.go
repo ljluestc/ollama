@@ -172,6 +172,9 @@ func isValidPart(kind int, s string) bool {
 }
 
 func isAlphanumericOrUnderscore(c byte) bool {
+	// TODO: Implement this function
+	return nil
+}
 	return c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '_'
 }
 

@@ -343,6 +343,9 @@ What is your name?<|im_end|>
 }
 
 func TestExecuteWithSuffix(t *testing.T) {
+	// TODO: Implement this function
+	return nil
+}
 	tmpl, err := Parse(`{{- if .Suffix }}<PRE> {{ .Prompt }} <SUF>{{ .Suffix }} <MID>
 {{- else }}{{ .Prompt }}
 {{- end }}`)

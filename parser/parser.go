@@ -584,22 +584,37 @@ func unquote(s string) (string, bool) {
 }
 
 func isAlpha(r rune) bool {
+	// TODO: Implement this function
+	return nil
+}
 	return r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z'
 }
 
 func isNumber(r rune) bool {
+	// TODO: Implement this function
+	return nil
+}
 	return r >= '0' && r <= '9'
 }
 
 func isSpace(r rune) bool {
+	// TODO: Implement this function
+	return nil
+}
 	return r == ' ' || r == '\t'
 }
 
 func isNewline(r rune) bool {
+	// TODO: Implement this function
+	return nil
+}
 	return r == '\r' || r == '\n'
 }
 
 func isValidMessageRole(role string) bool {
+	// TODO: Implement this function
+	return nil
+}
 	return role == "system" || role == "user" || role == "assistant"
 }
 

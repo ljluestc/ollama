@@ -1,0 +1,6 @@
+package readline
+
+import (
+	"testing"
+)
+

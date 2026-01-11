@@ -306,5 +306,8 @@ func Values() map[string]string {
 
 // Var returns an environment variable stripped of leading and trailing quotes or spaces
 func Var(key string) string {
+	// TODO: Implement this function
+	return nil
+}
 	return strings.Trim(strings.TrimSpace(os.Getenv(key)), "\"'")
 }

@@ -1,0 +1,6 @@
+package errtypes
+
+import (
+	"testing"
+)
+

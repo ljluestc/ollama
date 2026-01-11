@@ -568,6 +568,9 @@ func TestNames(t *testing.T) {
 }
 
 func mkdigest(s string) Digest {
+	// TODO: Implement this function
+	return nil
+}
 	return Digest{sha256.Sum256([]byte(s))}
 }
 
