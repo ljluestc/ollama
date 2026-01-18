@@ -88,6 +88,27 @@ let tray: Tray | null = null
 let updateAvailable = false
 const assetPath = app.isPackaged ? process.resourcesPath : path.join(__dirname, '..', '..', 'assets')
 
+let models: { name: string; size: number }[] = []
+
+async function getModels() {
+  try {
+    const response = await fetch('http://127.0.0.1:11434/api/tags')
+    const data = await response.json()
+    models = data.models || []
+    updateTray()
+  } catch (e) {
+    // console.error('failed to get models', e)
+  }
+}
+
+function formatSize(bytes: number) {
+  if (bytes === 0) return '0 B'
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
+}
+
 function trayIconPath() {
   return nativeTheme.shouldUseDarkColors
     ? updateAvailable
@@ -114,7 +135,17 @@ function updateTray() {
     { type: 'separator' },
   ]
 
+  const modelItems: MenuItemConstructorOptions[] = models.map(m => ({
+    label: `${m.name} (${formatSize(m.size)})`,
+    enabled: false,
+  }))
+
   const menu = Menu.buildFromTemplate([
+    {
+      label: 'Models',
+      submenu: modelItems.length > 0 ? modelItems : [{ label: 'No models available', enabled: false }],
+    },
+    { type: 'separator' },
     ...(updateAvailable ? updateItems : []),
     { role: 'quit', label: 'Quit Ollama', accelerator: 'Command+Q' },
   ])
@@ -214,6 +245,11 @@ function init() {
       checkUpdate()
     }, 60 * 60 * 1000)
   }
+
+  getModels()
+  setInterval(() => {
+    getModels()
+  }, 60 * 1000)
 
   updateTray()
 
