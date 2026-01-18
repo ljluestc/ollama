@@ -1,5 +1,4 @@
-{{- if .Suffix }}<|fim_prefix|>{{ .Prompt }}<|fim_suffix|>{{ .Suffix }}<|fim_middle|>
-{{- else -}}
+{{- if .Suffix }}<|fim_prefix|>{{ .Prompt }}<|fim_suffix|>{{ .Suffix }}<|fim_middle|>{{- else }}
 {{- range .Messages }}
 {{- if eq .Role "system" }}System:
 {{- else if eq .Role "user" }}Question:
