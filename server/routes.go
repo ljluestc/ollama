@@ -846,16 +846,26 @@ func (s *Server) EmbedHandler(c *gin.Context) {
 		return
 	}
 
+	if len(input) == 0 {
+		c.JSON(http.StatusOK, api.EmbedResponse{Model: req.Model, Embeddings: [][]float32{}})
+		return
+	}
+
 	r, m, opts, err := s.scheduleRunner(c.Request.Context(), name.String(), []model.Capability{}, req.Options, req.KeepAlive, nil)
 	if err != nil {
 		handleScheduleError(c, req.Model, err)
 		return
 	}
 
+	if r == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to acquire model runner"})
+		return
+	}
+
 	checkpointLoaded := time.Now()
 
-	if len(input) == 0 {
-		c.JSON(http.StatusOK, api.EmbedResponse{Model: req.Model, Embeddings: [][]float32{}})
+	if err := c.Request.Context().Err(); err != nil {
+		c.JSON(http.StatusRequestTimeout, gin.H{"error": fmt.Sprintf("request context error: %v", err)})
 		return
 	}
 
@@ -1056,6 +1066,12 @@ func (s *Server) EmbeddingsHandler(c *gin.Context) {
 		return
 	}
 
+	// an empty request loads the model
+	if req.Prompt == "" {
+		c.JSON(http.StatusOK, api.EmbeddingResponse{Embedding: []float64{}})
+		return
+	}
+
 	name := modelRef.Name
 
 	r, m, _, err := s.scheduleRunner(c.Request.Context(), name.String(), []model.Capability{}, req.Options, req.KeepAlive, nil)
@@ -1064,9 +1080,13 @@ func (s *Server) EmbeddingsHandler(c *gin.Context) {
 		return
 	}
 
-	// an empty request loads the model
-	if req.Prompt == "" {
-		c.JSON(http.StatusOK, api.EmbeddingResponse{Embedding: []float64{}})
+	if r == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to acquire model runner"})
+		return
+	}
+
+	if err := c.Request.Context().Err(); err != nil {
+		c.JSON(http.StatusRequestTimeout, gin.H{"error": fmt.Sprintf("request context error: %v", err)})
 		return
 	}
 

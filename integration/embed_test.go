@@ -567,6 +567,72 @@ func TestEmbedLargeInput(t *testing.T) {
 	}
 }
 
+// TestConcurrentEmbeddingRequests verifies the fix for issue #2049:
+// concurrent embedding requests should not return empty embeddings
+// when run concurrently with other API calls.
+func TestConcurrentEmbeddingRequests(t *testing.T) {
+	if testModel != "" {
+		t.Skip("uses hardcoded model, not applicable with model override")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := InitServerConnection(ctx, t)
+	defer cleanup()
+
+	model := "all-minilm"
+	testInputs := []string{
+		"concurrent test 1",
+		"concurrent test 2",
+		"concurrent test 3",
+	}
+
+	// Run multiple embedding requests concurrently
+	const numConcurrent = 10
+	results := make(chan *api.EmbedResponse, numConcurrent)
+	errors := make(chan error, numConcurrent)
+
+	for i := 0; i < numConcurrent; i++ {
+		go func(idx int) {
+			req := api.EmbedRequest{
+				Model:     model,
+				Input:     testInputs,
+				KeepAlive: &api.Duration{Duration: 10 * time.Second},
+			}
+			res, err := embedTestHelper(ctx, client, t, req)
+			if err != nil {
+				errors <- err
+			} else {
+				results <- res
+			}
+		}(i)
+	}
+
+	// Collect results
+	successCount := 0
+	for i := 0; i < numConcurrent; i++ {
+		select {
+		case err := <-errors:
+			t.Errorf("concurrent request %d failed: %v", i, err)
+		case res := <-results:
+			if len(res.Embeddings) != len(testInputs) {
+				t.Errorf("expected %d embeddings, got %d", len(testInputs), len(res.Embeddings))
+				continue
+			}
+			for j, emb := range res.Embeddings {
+				if len(emb) == 0 {
+					t.Errorf("concurrent request %d: embedding %d is empty", i, j)
+					continue
+				}
+			}
+			successCount++
+		}
+	}
+
+	if successCount < numConcurrent {
+		t.Fatalf("expected all %d concurrent requests to succeed, got %d", numConcurrent, successCount)
+	}
+}
+
 // TestEmbedStatusCode tests that errors from the embedding endpoint
 // properly preserve their HTTP status codes when returned to the client.
 // This test specifically checks the error handling path in EmbedHandler
