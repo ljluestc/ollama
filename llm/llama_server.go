@@ -2284,6 +2284,9 @@ func (s *llamaServerRunner) Embedding(ctx context.Context, input string) ([]floa
 		if err := json.Unmarshal(oaiResp.Data[0].Embedding, &embedding); err != nil {
 			return nil, 0, fmt.Errorf("unmarshal embedding values: %w", err)
 		}
+		if len(embedding) == 0 {
+			return nil, 0, fmt.Errorf("received empty embedding from runner")
+		}
 		promptTokens := oaiResp.Usage.PromptTokens
 		if promptTokens == 0 {
 			promptTokens = oaiResp.Data[0].TokensEvaluated
@@ -2311,6 +2314,10 @@ func (s *llamaServerRunner) Embedding(ctx context.Context, input string) ([]floa
 		if len(nested) > 0 {
 			embedding = nested[0]
 		}
+	}
+
+	if len(embedding) == 0 {
+		return nil, 0, fmt.Errorf("received empty embedding from runner")
 	}
 
 	return embedding, 0, nil

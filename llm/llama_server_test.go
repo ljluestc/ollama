@@ -1722,6 +1722,37 @@ func TestLlamaServerEmbedding(t *testing.T) {
 	}
 }
 
+func TestLlamaServerEmbeddingEmptyReturnsError(t *testing.T) {
+	// A runner that responds with an empty embedding array must surface an
+	// error rather than silently returning an empty vector (issue #2049).
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/health" {
+			fmt.Fprint(w, `{"status":"ok"}`)
+			return
+		}
+		fmt.Fprint(w, `{"data":[{"embedding":[],"tokens_evaluated":2}],"usage":{"prompt_tokens":2}}`)
+	}))
+	defer srv.Close()
+
+	parts := strings.Split(srv.URL, ":")
+	var portInt int
+	fmt.Sscanf(parts[len(parts)-1], "%d", &portInt)
+
+	runner := &llamaServerRunner{
+		port: portInt,
+		cmd:  fakeRunningCmd(),
+		sem:  semaphore.NewWeighted(1),
+	}
+
+	embedding, _, err := runner.Embedding(t.Context(), "hello")
+	if err == nil {
+		t.Fatalf("expected error for empty embedding, got embedding of length %d", len(embedding))
+	}
+	if len(embedding) != 0 {
+		t.Errorf("embedding length = %d, want 0", len(embedding))
+	}
+}
+
 func TestLegacyEmbeddingsWereRaw(t *testing.T) {
 	tests := []struct {
 		name string
