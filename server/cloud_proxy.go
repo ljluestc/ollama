@@ -182,6 +182,14 @@ func proxyCloudRequestWithPath(c *gin.Context, body []byte, path string, disable
 		return
 	}
 
+	// For Gemini API, inject thought_signature if present in the request
+	if sig, ok := extractThoughtSignature(body); ok {
+		modifiedBody, err := injectThoughtSignature(body, sig)
+		if err == nil {
+			body = modifiedBody
+		}
+	}
+
 	baseURL, err := url.Parse(cloudProxyBaseURL)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -284,6 +292,48 @@ func replaceJSONModelField(body []byte, model string) ([]byte, error) {
 	payload["model"] = modelJSON
 
 	return json.Marshal(payload)
+}
+
+func injectThoughtSignature(body []byte, signature string) ([]byte, error) {
+	if len(body) == 0 || signature == "" {
+		return body, nil
+	}
+
+	var payload map[string]json.RawMessage
+	if err := json.Unmarshal(body, &payload); err != nil {
+		return nil, err
+	}
+
+	sigJSON, err := json.Marshal(signature)
+	if err != nil {
+		return nil, err
+	}
+	payload["thought_signature"] = sigJSON
+
+	return json.Marshal(payload)
+}
+
+func extractThoughtSignature(body []byte) (string, bool) {
+	if len(body) == 0 {
+		return "", false
+	}
+
+	var payload map[string]json.RawMessage
+	if err := json.Unmarshal(body, &payload); err != nil {
+		return "", false
+	}
+
+	raw, ok := payload["thought_signature"]
+	if !ok {
+		return "", false
+	}
+
+	var signature string
+	if err := json.Unmarshal(raw, &signature); err != nil {
+		return "", false
+	}
+
+	return strings.TrimSpace(signature), signature != ""
 }
 
 func readRequestBody(r *http.Request) ([]byte, error) {

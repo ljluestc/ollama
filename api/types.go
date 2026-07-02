@@ -191,6 +191,11 @@ type ChatRequest struct {
 	// each with an associated log probability. Only applies when Logprobs is true.
 	// Valid values are 0-20. Default is 0 (only return the selected token's logprob).
 	TopLogprobs int `json:"top_logprobs,omitempty"`
+
+	// ThoughtSignature is used by providers like Gemini 3 to preserve state across
+	// tool-calling turns in multi-turn conversations. Clients should echo back the
+	// thought_signature from the previous response when sending tool results.
+	ThoughtSignature string `json:"thought_signature,omitempty"`
 }
 
 type Tools []Tool
@@ -558,6 +563,11 @@ type ChatResponse struct {
 	// Logprobs contains log probability information for the generated tokens,
 	// if requested via the Logprobs parameter.
 	Logprobs []Logprob `json:"logprobs,omitempty"`
+
+	// ThoughtSignature is used by providers like Gemini 3 to preserve state across
+	// tool-calling turns. Clients should echo this back in the next request when
+	// sending tool results.
+	ThoughtSignature string `json:"thought_signature,omitempty"`
 
 	Metrics
 }

@@ -316,3 +316,111 @@ func (r *chunkRecorder) Write(p []byte) (int, error) {
 	r.chunks = append(r.chunks, cp)
 	return len(p), nil
 }
+
+func TestExtractThoughtSignature_Present(t *testing.T) {
+	body := []byte(`{"model":"gemini-3-flash:cloud","messages":[],"thought_signature":"sig_12345"}`)
+	sig, ok := extractThoughtSignature(body)
+	if !ok {
+		t.Fatal("expected to extract thought_signature")
+	}
+	if sig != "sig_12345" {
+		t.Fatalf("expected signature %q, got %q", "sig_12345", sig)
+	}
+}
+
+func TestExtractThoughtSignature_Absent(t *testing.T) {
+	body := []byte(`{"model":"gemini-3-flash:cloud","messages":[]}`)
+	sig, ok := extractThoughtSignature(body)
+	if ok {
+		t.Fatalf("expected no signature, got %q", sig)
+	}
+	if sig != "" {
+		t.Fatalf("expected empty signature, got %q", sig)
+	}
+}
+
+func TestExtractThoughtSignature_EmptyBody(t *testing.T) {
+	sig, ok := extractThoughtSignature([]byte{})
+	if ok {
+		t.Fatal("expected no signature from empty body")
+	}
+	if sig != "" {
+		t.Fatalf("expected empty signature, got %q", sig)
+	}
+}
+
+func TestExtractThoughtSignature_InvalidJSON(t *testing.T) {
+	sig, ok := extractThoughtSignature([]byte(`{invalid`))
+	if ok {
+		t.Fatal("expected no signature from invalid JSON")
+	}
+	if sig != "" {
+		t.Fatalf("expected empty signature, got %q", sig)
+	}
+}
+
+func TestInjectThoughtSignature_New(t *testing.T) {
+	body := []byte(`{"model":"gemini-3-flash:cloud","messages":[]}`)
+	modified, err := injectThoughtSignature(body, "sig_12345")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	sig, ok := extractThoughtSignature(modified)
+	if !ok {
+		t.Fatal("expected to extract injected signature")
+	}
+	if sig != "sig_12345" {
+		t.Fatalf("expected signature %q, got %q", "sig_12345", sig)
+	}
+}
+
+func TestInjectThoughtSignature_Replace(t *testing.T) {
+	body := []byte(`{"model":"gemini-3-flash:cloud","messages":[],"thought_signature":"old_sig"}`)
+	modified, err := injectThoughtSignature(body, "new_sig")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	sig, ok := extractThoughtSignature(modified)
+	if !ok {
+		t.Fatal("expected to extract replaced signature")
+	}
+	if sig != "new_sig" {
+		t.Fatalf("expected signature %q, got %q", "new_sig", sig)
+	}
+}
+
+func TestInjectThoughtSignature_EmptySignature(t *testing.T) {
+	body := []byte(`{"model":"gemini-3-flash:cloud","messages":[]}`)
+	modified, err := injectThoughtSignature(body, "")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !bytes.Equal(modified, body) {
+		t.Fatal("expected body to be unchanged when injecting empty signature")
+	}
+}
+
+func TestInjectThoughtSignature_EmptyBody(t *testing.T) {
+	modified, err := injectThoughtSignature([]byte{}, "sig_12345")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(modified) != 0 {
+		t.Fatalf("expected empty body to remain empty, got %d bytes", len(modified))
+	}
+}
+
+func TestExtractThoughtSignature_WithWhitespace(t *testing.T) {
+	body := []byte(`{"model":"gemini-3-flash:cloud","thought_signature":"  sig_12345  "}`)
+	sig, ok := extractThoughtSignature(body)
+	if !ok {
+		t.Fatal("expected to extract thought_signature with whitespace")
+	}
+	if sig != "sig_12345" {
+		t.Fatalf("expected trimmed signature %q, got %q", "sig_12345", sig)
+	}
+}
