@@ -183,6 +183,12 @@ type ToolCall struct {
 		Name      string `json:"name"`
 		Arguments string `json:"arguments"`
 	} `json:"function"`
+	// ThoughtSignature is an opaque token returned by providers like Gemini 3
+	// when thinking is enabled alongside tool calls. It must be echoed back in
+	// the next request alongside the tool result for this call. Clients should
+	// treat this as an opaque blob and preserve it when echoing assistant
+	// messages back in the conversation history.
+	ThoughtSignature string `json:"thought_signature,omitempty"`
 }
 
 type Model struct {
@@ -246,6 +252,7 @@ func ToToolCalls(tc []api.ToolCall) []ToolCall {
 		toolCalls[i].Type = "function"
 		toolCalls[i].Function.Name = tc.Function.Name
 		toolCalls[i].Index = tc.Function.Index
+		toolCalls[i].ThoughtSignature = tc.ThoughtSignature
 
 		args, err := json.Marshal(tc.Function.Arguments)
 		if err != nil {
@@ -715,6 +722,7 @@ func FromCompletionToolCall(toolCalls []ToolCall) ([]api.ToolCall, error) {
 	for i, tc := range toolCalls {
 		apiToolCalls[i].ID = tc.ID
 		apiToolCalls[i].Function.Name = tc.Function.Name
+		apiToolCalls[i].ThoughtSignature = tc.ThoughtSignature
 		err := json.Unmarshal([]byte(tc.Function.Arguments), &apiToolCalls[i].Function.Arguments)
 		if err != nil {
 			return nil, errors.New("invalid tool call arguments")

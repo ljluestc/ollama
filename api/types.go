@@ -235,6 +235,11 @@ func (m *Message) UnmarshalJSON(b []byte) error {
 type ToolCall struct {
 	ID       string           `json:"id,omitempty"`
 	Function ToolCallFunction `json:"function"`
+	// ThoughtSignature is an opaque token returned by providers like Gemini 3
+	// when thinking is enabled. It must be echoed back in the next request
+	// alongside the tool result for the corresponding function call. Clients
+	// should treat this as an opaque blob and preserve it across turns.
+	ThoughtSignature string `json:"thought_signature,omitempty"`
 }
 
 type ToolCallFunction struct {

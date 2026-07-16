@@ -907,3 +907,119 @@ func TestFromImageEditRequest_InvalidImage(t *testing.T) {
 		t.Error("expected error for invalid image")
 	}
 }
+
+// TestThoughtSignatureRoundTrip_ToToolCalls verifies that ThoughtSignature
+// set on api.ToolCall is preserved when converting to the OpenAI ToolCall
+// format (api → openai). This is the outbound path: Ollama returns a response
+// with Gemini function calls that carry thought_signature tokens, and those
+// tokens must survive the format conversion so clients can echo them back.
+func TestThoughtSignatureRoundTrip_ToToolCalls(t *testing.T) {
+	apiCalls := []api.ToolCall{
+		{
+			ID:               "call_abc",
+			ThoughtSignature: "sig_AAABBBCCC",
+			Function: api.ToolCallFunction{
+				Index:     0,
+				Name:      "get_weather",
+				Arguments: testArgs(map[string]any{"location": "NYC"}),
+			},
+		},
+		{
+			ID: "call_def",
+			// No ThoughtSignature — should round-trip as empty string.
+			Function: api.ToolCallFunction{
+				Index:     1,
+				Name:      "get_time",
+				Arguments: testArgs(map[string]any{"tz": "UTC"}),
+			},
+		},
+	}
+
+	got := ToToolCalls(apiCalls)
+
+	if got[0].ThoughtSignature != "sig_AAABBBCCC" {
+		t.Errorf("call[0] ThoughtSignature: got %q, want %q", got[0].ThoughtSignature, "sig_AAABBBCCC")
+	}
+	if got[1].ThoughtSignature != "" {
+		t.Errorf("call[1] ThoughtSignature: got %q, want empty", got[1].ThoughtSignature)
+	}
+}
+
+// TestThoughtSignatureRoundTrip_FromCompletionToolCall verifies that
+// ThoughtSignature set on an openai.ToolCall is preserved when converting to
+// the internal api.ToolCall format (openai → api). This is the inbound path:
+// a client echoes back an assistant message that contains tool calls with
+// thought_signature tokens, and those tokens must survive the format
+// conversion so the cloud backend can forward them to Gemini.
+func TestThoughtSignatureRoundTrip_FromCompletionToolCall(t *testing.T) {
+	oaiCalls := []ToolCall{
+		{
+			ID:               "call_abc",
+			Type:             "function",
+			ThoughtSignature: "sig_AAABBBCCC",
+			Function: struct {
+				Name      string `json:"name"`
+				Arguments string `json:"arguments"`
+			}{
+				Name:      "get_weather",
+				Arguments: `{"location":"NYC"}`,
+			},
+		},
+		{
+			ID:   "call_def",
+			Type: "function",
+			// No ThoughtSignature.
+			Function: struct {
+				Name      string `json:"name"`
+				Arguments string `json:"arguments"`
+			}{
+				Name:      "get_time",
+				Arguments: `{"tz":"UTC"}`,
+			},
+		},
+	}
+
+	got, err := FromCompletionToolCall(oaiCalls)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if got[0].ThoughtSignature != "sig_AAABBBCCC" {
+		t.Errorf("call[0] ThoughtSignature: got %q, want %q", got[0].ThoughtSignature, "sig_AAABBBCCC")
+	}
+	if got[1].ThoughtSignature != "" {
+		t.Errorf("call[1] ThoughtSignature: got %q, want empty", got[1].ThoughtSignature)
+	}
+}
+
+// TestThoughtSignatureRoundTrip_FullCycle verifies the complete loop:
+// api.ToolCall → openai.ToolCall → api.ToolCall preserves ThoughtSignature.
+func TestThoughtSignatureRoundTrip_FullCycle(t *testing.T) {
+	original := []api.ToolCall{
+		{
+			ID:               "call_xyz",
+			ThoughtSignature: "gemini_sig_opaque_token_base64encoded==",
+			Function: api.ToolCallFunction{
+				Name:      "search",
+				Arguments: testArgs(map[string]any{"query": "hello"}),
+			},
+		},
+	}
+
+	// api → openai
+	oaiCalls := ToToolCalls(original)
+	if oaiCalls[0].ThoughtSignature != original[0].ThoughtSignature {
+		t.Errorf("api→openai: ThoughtSignature mismatch: got %q, want %q",
+			oaiCalls[0].ThoughtSignature, original[0].ThoughtSignature)
+	}
+
+	// openai → api
+	recovered, err := FromCompletionToolCall(oaiCalls)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if recovered[0].ThoughtSignature != original[0].ThoughtSignature {
+		t.Errorf("openai→api: ThoughtSignature mismatch: got %q, want %q",
+			recovered[0].ThoughtSignature, original[0].ThoughtSignature)
+	}
+}
